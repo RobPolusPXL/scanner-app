@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Testadressen</title>
+  <style>
+    body { margin: 0; padding: 16px; background: #ddd; font-family: Arial, Helvetica, sans-serif; color: #111; }
+    h1 { font-size: 20px; margin: 0 0 4px; }
+    p.info { margin: 0 0 16px; color: #444; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+    .env { background: #fdfcf8; border-radius: 6px; padding: 28px 32px; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .addr { font-size: 26px; line-height: 1.35; }
+    .exp { margin-top: 14px; font-size: 13px; color: #777; border-top: 1px dashed #ccc; padding-top: 6px; }
+    .hand { font-family: "Comic Sans MS", "Segoe Print", cursive; }
+    @media print { body { background: #fff; } .env { box-shadow: none; border: 1px solid #999; break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <h1>Testadressen voor de Ronde Scanner</h1>
+  <p class="info">Open deze pagina op je computer (of print ze) en richt de telefoon met de scanner op één adres tegelijk. Onder elk adres staat wat de app zou moeten tonen.</p>
+  <div class="grid" id="grid"></div>
+  <script>
+    const T = [
+      ['Fam. Peeters', 'Laakstraat 12', '3580 Beringen', '28'],
+      ['Dhr. J. Claes', 'Heerbaan 145', '3580 Beringen', '38 (oneven 3-299)'],
+      ['Mevr. A. Vos', 'Heerbaan 320', '3580 Beringen', '25 (even 316-456)'],
+      ['Bvba De Smet', 'Koolmijnlaan 250', '3582 Koersel', '20'],
+      ['Fam. Janssens', 'Korspelheidestraat 10', '3583 Paal', '25'],
+      ['Dhr. K. Wouters', 'Mathias Geysenstraat 92', '3580 Beringen', '26'],
+      ['Mevr. L. Maes', 'Pater Bellinkxstraat 22', '3580 Beringen', '32'],
+      ['Fam. Willems', 'Hemelstraat 4', '3580 Beringen', '31'],
+      ['Postkantoor', 'Ward Schoutedenstraat 7', '3580 Beringen', '901 (Rbu-901, postkantoor)'],
+      ['Stad Beringen', 'Collegestraat 1', '3580 Beringen', '36 (Rbu-036, stad)'],
+      ['Dhr. P. Goossens', 'Sint-Jorisstraat 50 bus 2', '3581 Beverlo', '11'],
+      ['Fam. Mertens', 'Valentijnstraat 17', '3582 Koersel', '26'],
+      ['Mevr. S. Peeters', 'Heerbaan', '3580 Beringen', 'ORANJE: geen huisnummer, kies 25 of 38'],
+      ['Dhr. T. Jacobs', 'Laakstraat 4', '3560 Lummen', 'ORANJE: postcode niet Beringen'],
+      ['Fam. Hermans', 'Molenstraat 4', '3580 Beringen', 'ORANJE of niets: straat bestaat niet'],
+      ['Rob Polus', 'Buitenhof 65', '3520 Zonhoven', '50 (testdata)'],
+    ];
+    document.getElementById('grid').innerHTML = T.map(([n, s, p, e], i) =>
+      `<div class="env"><div class="addr${i % 4 === 3 ? ' hand' : ''}">${n}<br>${s}<br>${p}</div><div class="exp">Verwacht: ${e}</div></div>`).join('');
+  </script>
+</body>
+</html>
