@@ -170,8 +170,9 @@
   // ---------- spraak ----------
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const micBtn = $('btnMic');
-  if (SR) {
-    micBtn.hidden = false;
+  if (!SR) {
+    micBtn.addEventListener('click', () => setStatus('Spraak werkt niet in deze browser: open de pagina in Chrome'));
+  } else {
     let rec = null;
     micBtn.addEventListener('click', () => {
       if (listening && rec) { rec.stop(); return; }
