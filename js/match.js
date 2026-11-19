@@ -4,7 +4,7 @@
   'use strict';
 
   // Beringen: 3580 Beringen, 3581 Beverlo, 3582 Koersel, 3583 Paal
-  const POSTCODES = ['3580', '3581', '3582', '3583'];
+  const POSTCODES = ['3580', '3581', '3582', '3583', '3520']; // 3520 Zonhoven = testdata
   const MIN_SCORE = 0.72;   // daaronder: geen match
   const SURE_SCORE = 0.86;  // daaronder: tonen als twijfel (kandidaat aantikken)
   const GAP = 0.06;         // verschil met 2e beste straat om zeker te zijn

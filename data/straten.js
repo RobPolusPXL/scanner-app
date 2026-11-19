@@ -6,6 +6,7 @@
 //   OPMERKING : optioneel (gele regels op de lijst)
 // LET OP: letters A en B (tot Blookweg) ontbreken nog — die stonden niet op de foto's.
 window.STRATEN_RAW = `
+050|BUITENHOF||Testdata (Zonhoven)
 029|BLOOKWEG
 005|BOERENHOFSTRAAT
 016|BOGAARSVELDSTRAAT

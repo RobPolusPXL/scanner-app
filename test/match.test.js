@@ -35,6 +35,7 @@ const cases = [
   ['Kerkplein 2\n3580 Beringen', 'sure', 'Res-026'],
   ['Koolmijnlaan 250\n3582 Koersel', 'sure', 'Res-020'],
   ['Laakstraat 12\n3560 Lummen', 'doubt', null],           // andere gemeente
+  ['Buitenhof 65\n3520 Zonhoven', 'sure', 'Res-050'],         // testdata
   ['Factuur nr 123456\nBetalen voor 12/12', 'none', null],
   ['Molenstraat 4', 'none-or-doubt', null],                 // bestaat niet
 ];
