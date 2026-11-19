@@ -1,8 +1,8 @@
 // Service worker: app werkt na de eerste keer ook offline (camera-OCR; spraak heeft wel internet nodig).
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CORE = `core-${VERSION}`;
 const BIG = 'ocr-v1'; // tekstherkenning + taalmodel: groot, verandert zelden
-const CORE_FILES = ['./', 'index.html', 'css/style.css?v=4', 'data/straten.js?v=4', 'js/match.js?v=4', 'js/app.js?v=4', 'manifest.webmanifest', 'icons/icon-192.png'];
+const CORE_FILES = ['./', 'index.html', 'css/style.css?v=4', 'data/straten.js?v=4', 'js/match.js?v=4', 'js/app.js?v=4', 'manifest.webmanifest', 'icons/icon-192.png?v=2'];
 const BIG_FILES = ['vendor/tesseract.min.js', 'vendor/worker.min.js', 'vendor/core/tesseract-core-simd-lstm.wasm.js', 'vendor/core/tesseract-core-lstm.wasm.js', 'lang/nld.traineddata.gz'];
 
 self.addEventListener('install', (e) => {
