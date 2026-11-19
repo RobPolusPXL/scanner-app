@@ -7,17 +7,17 @@ const { createMatcher } = require('../js/match.js');
 const m = createMatcher(ctx.window.STRATEN_RAW);
 
 const cases = [
-  ['Jan Peeters\nLaakstraat 12\n3560 Lummen', 'sure', 'Res-028'],
-  ['Familie Janssens\nLaakstrat 12\n3560 LUMMEN', 'sure', 'Res-028'],          // OCR-foutje
-  ['Mevr. X\nHeerbaan 145\n3560 Lummen', 'sure', 'Res-038'],
-  ['Heerbaan 320\n3560 Lummen', 'sure', 'Res-025'],
-  ['Mathias Geysenstraat 53\n3560 Lummen', 'sure', 'Res-026'],
+  ['Jan Peeters\nLaakstraat 12\n3580 Beringen', 'sure', 'Res-028'],
+  ['Familie Janssens\nLaakstrat 12\n3583 PAAL', 'sure', 'Res-028'],          // OCR-foutje
+  ['Mevr. X\nHeerbaan 145\n3580 Beringen', 'sure', 'Res-038'],
+  ['Heerbaan 320\n3580 Beringen', 'sure', 'Res-025'],
+  ['Mathias Geysenstraat 53\n3580 Beringen', 'sure', 'Res-026'],
   ['Mathias Geysenstraat 92', 'sure', 'Res-026'],
-  ['Korspelheidestraat 10\n3560 Lummen', 'sure', 'Res-025'],
+  ['Korspelheidestraat 10\n3580 Beringen', 'sure', 'Res-025'],
   ['Korspelheidestraat 150', 'sure', 'Res-023'],
   ['Valentijnstraat 17', 'sure', 'Res-026'],
-  ['Ward Schoutedenstraat 7\n3560 Lummen', 'sure', 'Rbu-901'],
-  ['Ward Schoutedenstraat 9\n3560 Lummen', 'sure', 'Res-036'],
+  ['Ward Schoutedenstraat 7\n3580 Beringen', 'sure', 'Rbu-901'],
+  ['Ward Schoutedenstraat 9\n3580 Beringen', 'sure', 'Res-036'],
   ['Collegestraat 1', 'sure', 'Rbu-036'],
   ['Collegestraat 9', 'sure', 'Res-016'],
   ['Hemelstraat 4', 'sure', 'Res-031'],
@@ -29,10 +29,12 @@ const cases = [
   ['Vurtense Schansstraat 2', 'sure', 'Res-028'],
   ['Rijsselstraat 100', 'sure', 'Res-015'],
   ['Rijsselstraat 50', 'sure', 'Res-014'],
-  ['Heerbaan\n3560 Lummen', 'doubt', null],                 // gesplitst zonder nummer
+  ['Heerbaan\n3580 Beringen', 'doubt', null],                 // gesplitst zonder nummer
   ['Laakstraat 12\n3500 Hasselt', 'doubt', null],           // andere gemeente
-  ['Kerkstraat 12\n3560 Lummen', 'sure', 'Res-019'],
-  ['Kerkplein 2\n3560 Lummen', 'sure', 'Res-026'],
+  ['Kerkstraat 12\n3580 Beringen', 'sure', 'Res-019'],
+  ['Kerkplein 2\n3580 Beringen', 'sure', 'Res-026'],
+  ['Koolmijnlaan 250\n3582 Koersel', 'sure', 'Res-020'],
+  ['Laakstraat 12\n3560 Lummen', 'doubt', null],           // andere gemeente
   ['Factuur nr 123456\nBetalen voor 12/12', 'none', null],
   ['Molenstraat 4', 'none-or-doubt', null],                 // bestaat niet
 ];

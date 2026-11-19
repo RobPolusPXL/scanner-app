@@ -1,6 +1,6 @@
 # Ronde Scanner
 
-Testversie van een sorteerhulp voor BPost (3560 Lummen): houd een brief voor de camera en de app toont de straat en het rondenummer in het groot.
+Testversie van een sorteerhulp voor BPost (Beringen: 3580–3583): houd een brief voor de camera en de app toont de straat en het rondenummer in het groot.
 
 - **Groen** = zeker, ronde staat groot op het scherm.
 - **Oranje** = twijfel (straat lijkt op een andere, gesplitste straat zonder leesbaar huisnummer, of een andere postcode). Tik de juiste ronde aan.

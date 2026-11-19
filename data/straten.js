@@ -1,4 +1,4 @@
-// Sorteerlijst 3560 Lummen — overgenomen van de papieren lijst (foto's 19-11-2026).
+// Sorteerlijst Beringen (3580, 3581 Beverlo, 3582 Koersel, 3583 Paal) — overgenomen van de papieren lijst (foto's 19-11-2026).
 // Formaat per regel: RONDE|STRAATNAAM|BEREIKEN|OPMERKING
 //   RONDE     : "021" voor Res-021, of volledige code zoals "Rbu-036"
 //   BEREIKEN  : leeg = hele straat; anders "1-99/2-70" (oneven/even reeksen zoals op de lijst)

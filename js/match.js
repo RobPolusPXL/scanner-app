@@ -3,7 +3,8 @@
 (function (root) {
   'use strict';
 
-  const POSTCODE = '3560';
+  // Beringen: 3580 Beringen, 3581 Beverlo, 3582 Koersel, 3583 Paal
+  const POSTCODES = ['3580', '3581', '3582', '3583'];
   const MIN_SCORE = 0.72;   // daaronder: geen match
   const SURE_SCORE = 0.86;  // daaronder: tonen als twijfel (kandidaat aantikken)
   const GAP = 0.06;         // verschil met 2e beste straat om zeker te zijn
@@ -86,7 +87,7 @@
       else if (t.length > 5 && t.endsWith('STWG')) w = t.slice(0, -4) + 'STEENWEG';
       alpha.push(w);
     }
-    // postcode-regel ("3560 LUMMEN"): geen adres
+    // postcode-regel ("3580 BERINGEN"): geen adres
     if (/^\d{4}$/.test(tokens[0] || '') && number === null) return null;
     if (number !== null && number >= 1000) return null;
     const cand = alpha.join('');
@@ -163,7 +164,7 @@
       }
       const ranked = [...best.values()].sort((a, b) => b.score - a.score);
       const postcodes = findPostcodes(text);
-      const otherPostcode = postcodes.length && !postcodes.includes(POSTCODE) ? postcodes[0] : null;
+      const otherPostcode = postcodes.length && !postcodes.some((p) => POSTCODES.includes(p)) ? postcodes[0] : null;
 
       if (!ranked.length || ranked[0].score < MIN_SCORE) return { status: 'none', otherPostcode };
 
@@ -187,7 +188,7 @@
       if (!res.sure) {
         return { ...base, status: 'doubt', reason: res.reason, choices: res.options.map((o) => ({ street: top.street, number: top.number, res: { sure: true, entry: o } })) };
       }
-      if (otherPostcode) return { ...base, status: 'doubt', reason: 'Postcode ' + otherPostcode + ' is niet ' + POSTCODE, choices: [{ street: top.street, number: top.number, res }] };
+      if (otherPostcode) return { ...base, status: 'doubt', reason: 'Postcode ' + otherPostcode + ' is niet Beringen', choices: [{ street: top.street, number: top.number, res }] };
       return { ...base, status: 'sure', entry: res.entry };
     }
 
