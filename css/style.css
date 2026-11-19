@@ -36,6 +36,11 @@ main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .choices button { background: #fff; color: #111; padding: 14px 18px; font-size: 20px; font-weight: 700; min-width: 140px; }
 .choices button small { display: block; font-weight: 400; font-size: 14px; color: #444; }
 
+.result { position: relative; }
+.mic { position: absolute; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 8px; background: #fff; color: #111; padding: 14px 20px; font-size: 20px; font-weight: 700; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.mic.listening { background: #e53935; color: #fff; animation: pulse 1s infinite; }
+@keyframes pulse { 50% { transform: scale(1.06); } }
+
 .debug { margin: 0; padding: 8px 16px; max-height: 22vh; overflow: auto; font-size: 12px; background: #000; color: #8f8; border-top: 1px solid var(--line); white-space: pre-wrap; }
 
 dialog { width: min(720px, calc(100vw - 16px)); max-width: none; max-height: 92vh; padding: 0; border: 0; border-radius: 14px; background: #1a1a1a; color: var(--fg); }

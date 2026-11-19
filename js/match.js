@@ -98,11 +98,57 @@
     return { cand, tails, number };
   }
 
-  function scoreCandidate(p, key) {
+  // Straattype achteraan, voor spraak ("Laak" = Laakstraat, "Pater Bellings" = Pater Bellinkxstraat)
+  const SUFFIX = /(STEENWEG|STRAAT|LAAN|WEG|PLEIN|DREEF|PAD|STEEG|PARK|DIJK|WIJK|KAAI)$/;
+  const stem = (key) => key.replace(SUFFIX, '');
+
+  function scoreCandidate(p, key, voice) {
     let s = sim(p.cand, key);
     // staart-match telt minder, zodat "VURTENSE SCHANSSTRAAT" niet twijfelt met "SCHANSSTRAAT"
     for (const t of p.tails) if (t.length >= 4) s = Math.max(s, sim(t, key) - 0.12);
+    if (voice) {
+      const st = stem(key), cs = p.cand.replace(SUFFIX, '');
+      if (st.length >= 3 && cs === st) s = Math.max(s, 0.95);                 // "LAAK" -> LAAKSTRAAT
+      else if (cs.length >= 4 && key.startsWith(cs)) s = Math.max(s, 0.9);    // "MOLEN" -> alle MOLEN...
+      if (cs.length >= 4 && st.length >= 4) s = Math.max(s, sim(cs, st) - 0.04);
+    }
     return s;
+  }
+
+  // Nederlandse getalwoorden -> cijfers ("honderdvijfenveertig" -> 145), voor spraak
+  const UNITS = { EEN: 1, EN: 1, TWEE: 2, DRIE: 3, VIER: 4, VIJF: 5, ZES: 6, ZEVEN: 7, ACHT: 8, NEGEN: 9 };
+  const TEENS = { TIEN: 10, ELF: 11, TWAALF: 12, DERTIEN: 13, VEERTIEN: 14, VIJFTIEN: 15, ZESTIEN: 16, ZEVENTIEN: 17, ACHTTIEN: 18, NEGENTIEN: 19 };
+  const TENS = { TWINTIG: 20, DERTIG: 30, VEERTIG: 40, VIJFTIG: 50, ZESTIG: 60, ZEVENTIG: 70, TACHTIG: 80, NEGENTIG: 90 };
+  function parseSmall(w) {
+    if (w in TEENS) return TEENS[w];
+    if (w in TENS) return TENS[w];
+    if (w in UNITS && w !== 'EN') return UNITS[w];
+    const m = w.match(/^(EEN|TWEE|DRIE|VIER|VIJF|ZES|ZEVEN|ACHT|NEGEN)EN(TWINTIG|DERTIG|VEERTIG|VIJFTIG|ZESTIG|ZEVENTIG|TACHTIG|NEGENTIG)$/);
+    return m ? UNITS[m[1]] + TENS[m[2]] : null;
+  }
+  function parseNumberWord(w) {
+    const i = w.indexOf('HONDERD');
+    if (i < 0) return parseSmall(w);
+    const pre = w.slice(0, i), post = w.slice(i + 7);
+    const h = pre ? parseSmall(pre) : 1;
+    if (h == null || h > 9) return null;
+    if (!post) return h * 100;
+    const r = parseSmall(post.replace(/^EN/, ''));
+    return r == null ? null : h * 100 + r;
+  }
+  const FILLER = new Set(['NUMMER', 'NR', 'HUISNUMMER', 'UH', 'EH', 'EUH', 'DE', 'HET']);
+  function wordsToDigits(text) {
+    const t = normalize(text).split(' ').filter((x) => x && !FILLER.has(x));
+    const out = [];
+    for (let i = 0; i < t.length; i++) {
+      let done = false;
+      for (let j = Math.min(t.length, i + 3); j > i; j--) {   // "honderd vijfenveertig" = 2 woorden
+        const n = parseNumberWord(t.slice(i, j).join(''));
+        if (n != null && !(j - i === 1 && t[i] === 'EEN' && i === 0)) { out.push(String(n)); i = j - 1; done = true; break; }
+      }
+      if (!done) out.push(t[i]);
+    }
+    return out.join(' ');
   }
 
   function findPostcodes(text) {
@@ -145,14 +191,16 @@
     const streets = parseList(raw);
     const list = [...streets.values()];
 
-    function analyze(text) {
+    function analyze(text, opts) {
+      const voice = !!(opts && opts.voice);
+      if (voice) text = wordsToDigits(text);
       const lines = text.split(/\n+/).map((l) => l.trim()).filter(Boolean);
       const scored = [];
       for (const line of lines) {
         const p = parseLine(line);
         if (!p) continue;
         for (const st of list) {
-          const s = scoreCandidate(p, st.key);
+          const s = scoreCandidate(p, st.key, voice);
           if (s >= MIN_SCORE - 0.1) scored.push({ street: st, score: s, number: p.number, line });
         }
       }
@@ -176,13 +224,13 @@
       const topRound = res.sure ? res.entry.round : null;
       const realRivals = rivals.filter((r) => !topRound || roundOf(r) !== topRound);
 
-      const base = { street: top.street, number: top.number, score: top.score, line: top.line, otherPostcode };
+      const base = { street: top.street, number: top.number, score: top.score, line: top.line, otherPostcode, heard: voice ? text : undefined };
 
       if (realRivals.length) {
-        const options = [top, ...realRivals].slice(0, 4).map((m) => ({ street: m.street, number: m.number, res: resolve(m.street, m.number) }));
+        const options = [top, ...realRivals].slice(0, voice ? 6 : 4).map((m) => ({ street: m.street, number: m.number, res: resolve(m.street, m.number) }));
         return { ...base, status: 'doubt', reason: 'Straatnaam lijkt op meerdere straten', choices: options };
       }
-      if (top.score < SURE_SCORE) {
+      if (top.score < (voice ? 0.8 : SURE_SCORE)) {
         return { ...base, status: 'doubt', reason: 'Straatnaam niet scherp gelezen', choices: [{ street: top.street, number: top.number, res }] };
       }
       if (!res.sure) {
@@ -195,7 +243,7 @@
     return { streets, list, analyze, resolve };
   }
 
-  const api = { createMatcher, normalize, parseLine, titleCase, lev };
+  const api = { createMatcher, normalize, parseLine, titleCase, lev, wordsToDigits };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Sorteer = api;
 })(typeof window !== 'undefined' ? window : globalThis);

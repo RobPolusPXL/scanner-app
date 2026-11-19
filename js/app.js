@@ -10,6 +10,7 @@
   const MAX_W = 1400;       // breedte van het uitgesneden beeld voor OCR
 
   let worker = null, running = false, lastShownKey = '', lastHit = 0, pinned = false, track = null;
+  let listening = false, voiceHoldUntil = 0;   // tijdens/na spraak overschrijft de camera het resultaat niet
 
   const setStatus = (t) => { statusEl.textContent = t; };
   // Res-021 -> "21", Rbu-901 -> "901"
@@ -133,7 +134,7 @@
         const { data } = await worker.recognize(frame);
         const ms = Math.round(performance.now() - t0);
         const r = matcher.analyze(data.text || '');
-        render(r);
+        if (!listening && Date.now() > voiceHoldUntil) render(r);
         setStatus('Scannen… ' + ms + ' ms per beeld');
         if (!debugEl.hidden) debugEl.textContent = (data.text || '').trim() + '\n— ' + ms + ' ms · ' + r.status + (r.street ? ' · ' + r.street.display + ' ' + (r.number ?? '') + ' (' + r.score.toFixed(2) + ')' : '');
       } catch (e) {
@@ -165,6 +166,58 @@
   });
 
   $('btnDebug').addEventListener('click', () => { debugEl.hidden = !debugEl.hidden; });
+
+  // ---------- spraak ----------
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = $('btnMic');
+  if (SR) {
+    micBtn.hidden = false;
+    let rec = null;
+    micBtn.addEventListener('click', () => {
+      if (listening && rec) { rec.stop(); return; }
+      rec = new SR();
+      rec.lang = 'nl-BE';
+      rec.interimResults = false;
+      rec.maxAlternatives = 5;
+      listening = true;
+      micBtn.classList.add('listening');
+      micBtn.querySelector('span').textContent = 'Luisteren…';
+      rec.onresult = (ev) => {
+        const alts = [...ev.results[0]].map((a) => a.transcript);
+        // beste alternatief: eerst zeker, dan hoogste score
+        let best = null;
+        for (const t of alts) {
+          const r = matcher.analyze(t, { voice: true });
+          r.heardText = t;
+          const rank = (x) => (x.status === 'sure' ? 2 : x.status === 'doubt' ? 1 : 0) + (x.score || 0) / 10;
+          if (!best || rank(r) > rank(best)) best = r;
+        }
+        voiceHoldUntil = Date.now() + 6000;
+        lastShownKey = '';
+        if (best.status === 'none') {
+          show('doubt', '"' + alts[0] + '"', '', 'Niet herkend, probeer opnieuw');
+        } else {
+          render(best);
+          if (best.status === 'doubt' && best.choices.length > 1 && best.choices[0].street !== best.choices[1].street) {
+            streetEl.textContent = '"' + best.heardText + '"';   // meerdere straten: toon wat gehoord is
+          } else {
+            subEl.textContent = (subEl.textContent ? subEl.textContent + ' · ' : '') + 'gehoord: "' + best.heardText + '"';
+          }
+        }
+        if (!debugEl.hidden) debugEl.textContent = 'Spraak: ' + alts.join(' | ');
+      };
+      rec.onerror = (ev) => {
+        const msg = { 'not-allowed': 'Microfoon niet toegestaan', 'network': 'Geen internet voor spraak', 'no-speech': 'Niets gehoord' }[ev.error] || ('Spraakfout: ' + ev.error);
+        setStatus(msg);
+      };
+      rec.onend = () => {
+        listening = false;
+        micBtn.classList.remove('listening');
+        micBtn.querySelector('span').textContent = 'Spreek';
+      };
+      try { rec.start(); } catch (e) { rec.onend(); setStatus('Spraak start niet: ' + e.message); }
+    });
+  }
 
   // ---------- controlelijst ----------
   const dlg = $('listDlg'), tbody = document.querySelector('#listTable tbody');
