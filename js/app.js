@@ -10,7 +10,7 @@
   const MAX_W = 1400;       // breedte van het uitgesneden beeld voor OCR
 
   let worker = null, running = false, lastShownKey = '', lastHit = 0, pinned = false, track = null;
-  let listening = false, voiceHoldUntil = 0;   // tijdens/na spraak overschrijft de camera het resultaat niet
+  let listening = false;   // tijdens het luisteren overschrijft de camera het resultaat niet
 
   const setStatus = (t) => { statusEl.textContent = t; };
   // Res-021 -> "21", Rbu-901 -> "901"
@@ -134,7 +134,7 @@
         const { data } = await worker.recognize(frame);
         const ms = Math.round(performance.now() - t0);
         const r = matcher.analyze(data.text || '');
-        if (!listening && Date.now() > voiceHoldUntil) render(r);
+        if (!listening) render(r);
         setStatus('Scannen… ' + ms + ' ms per beeld');
         if (!debugEl.hidden) debugEl.textContent = (data.text || '').trim() + '\n— ' + ms + ' ms · ' + r.status + (r.street ? ' · ' + r.street.display + ' ' + (r.number ?? '') + ' (' + r.score.toFixed(2) + ')' : '');
       } catch (e) {
@@ -193,7 +193,7 @@
           const rank = (x) => (x.status === 'sure' ? 2 : x.status === 'doubt' ? 1 : 0) + (x.score || 0) / 10;
           if (!best || rank(r) > rank(best)) best = r;
         }
-        voiceHoldUntil = Date.now() + 6000;
+        lastHit = Date.now();   // blijft even lang staan als een scanresultaat
         lastShownKey = '';
         if (best.status === 'none') {
           show('doubt', '"' + alts[0] + '"', '', 'Niet herkend, probeer opnieuw');
