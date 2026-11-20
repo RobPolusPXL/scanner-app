@@ -9,7 +9,7 @@ Testversie van een sorteerhulp voor BPost (Beringen: 3580–3583): houd een brie
 Alles draait in de browser van de telefoon (Tesseract.js, Nederlands taalmodel), er gaat niets naar een server.
 
 ## Data
-`data/straten.js` — één regel per straat: `RONDE|STRAAT|BEREIKEN|OPMERKING`. Letters A en B (tot Blookweg) ontbreken nog.
+`data/straten.js` — één regel per straat: `RONDE|STRAAT|BEREIKEN|OPMERKING`.
 
 ## Testen
 `node test/match.test.js` test de matchlogica op voorbeeldadressen.
