@@ -232,7 +232,7 @@
         if (q && !hay.includes(q)) continue;
         const l = st.name[0];
         if (l !== letter && !q) { letter = l; rows.push('<tr class="letter"><td colspan="3">' + l + '</td></tr>'); }
-        rows.push('<tr class="' + (e.ranges.length ? 'split' : '') + '"><td>' + e.round + '</td><td>' + st.display + '</td><td>' + (e.note ? 'nr ' + e.ranges[0].lo + ' · ' + e.note : e.rangeText.replace(/\//g, ' / ')) + '</td></tr>');
+        rows.push('<tr class="' + (e.ranges.length ? 'split' : '') + '"><td>' + e.round + '</td><td>' + st.display + '</td><td>' + (e.note && e.ranges.length ? 'nr ' + e.ranges[0].lo + ' · ' + e.note : e.rangeText.replace(/\//g, ' / ') + (e.note ? e.note : '')) + '</td></tr>');
       }
     }
     tbody.innerHTML = rows.join('') || '<tr><td colspan="3">Niets gevonden</td></tr>';
